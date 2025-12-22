@@ -14,5 +14,7 @@ jobs:
           java-version: '8'
       - name: build package
         run: mvn clean package
+      - name: check the name of the jar file created
+        run: find . -name "*.jar"
       
     

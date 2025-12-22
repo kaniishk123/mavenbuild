@@ -16,5 +16,18 @@ jobs:
         run: mvn clean package
       - name: check the name of the jar file created
         run: find . -name "*.jar"
+      - name: enter into ssh via ec2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          user: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "./target/my-java-app-1.0-SNAPSHOT.jar"
+          target: "/jarfolder"
+      
+          
+          
+      
+          
       
     

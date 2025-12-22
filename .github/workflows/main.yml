@@ -1,0 +1,18 @@
+name: build java using maven
+on:   
+  workflow_dispatch:
+jobs:
+  get_code_into_machine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+      - name: install java on runner
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '8'
+      - name: build package
+        run: mvn clean package
+      
+    

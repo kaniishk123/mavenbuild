@@ -16,14 +16,12 @@ jobs:
         run: mvn clean package
       - name: check the name of the jar file created
         run: find . -name "*.jar"
-      - name: enter into ssh via ec2
-        uses: appleboy/scp-action@v0.1.7
+      - name: configure aws cred
+        uses: aws-actions/configure-aws-credentials@v4
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "./target/my-java-app-1.0-SNAPSHOT.jar"
-          target: "/home/ec2-user/jarfolder"
+          aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ap-south-1
       
           
           

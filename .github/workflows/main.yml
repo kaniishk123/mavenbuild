@@ -24,6 +24,16 @@ jobs:
           aws-region: ap-south-1
       - name: copy the created jar file into s3 bcuket
         run: aws s3 cp target/my-java-app-1.0-SNAPSHOT.jar s3://${{ secrets.AWS_BUCKET }}/
+      - name: Deploy and run JAR on EC2 via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --targets "Key=instanceids,Values=${{ secrets.EC2_INSTANCE_ID }}" \
+            --parameters 'commands=[
+              "aws s3 cp s3://${{ secrets.AWS_BUCKET }}/my-java-app-1.0-SNAPSHOT.jar /home/ec2-user/app.jar",
+              "java -jar /home/ec2-user/app.jar"
+            ]' \
+            --region ap-south-1
       
           
           

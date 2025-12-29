@@ -27,7 +27,7 @@ jobs:
       - name: copy the created jar file into s3 bcuket
         run: |
           jar_name=target/my-java-app-1.0-SNAPSHOT.jar
-          current_run=${{GITHUB_RUN_NUMBER}}
+          current_run=$GITHUB_RUN_NUMBER
           ts=$(date +'%Y%m%d-%H%M%S')
           final_name="java-app/${current_run}/${ts}"
           aws s3 cp "$jar_name" "s3://${{ secrets.AWS_BUCKET }}/${final_name}"

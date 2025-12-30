@@ -24,7 +24,7 @@ jobs:
       - name: connect to code artifact
         run: |
           export CODEART=$(aws codeartifact get-authorization-token \
-            --domain my-domain \
+            --domain kaniishk-domain \
             --query authorizationToken \
             --output text)
           echo "//kaniishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/:_authToken=$CODEART" > ~/.m2/settings.xml

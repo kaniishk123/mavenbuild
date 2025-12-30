@@ -32,7 +32,7 @@ jobs:
       - name: get codeartifact token and configure maven
         run: |
           TOKEN=$(aws codeartifact get-authorization-token \
-            --domain kaniishk-domain \
+            --domain kanishk-domain \
             --query authorizationToken \
             --output text)
 
@@ -53,4 +53,4 @@ jobs:
       - name: upload jar to codeartifact
         run: |
           mvn -B deploy \
-            -DaltDeploymentRepository=codeartifact::default::https://kaniishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/
+            -DaltDeploymentRepository=codeartifact::default::https://kanishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/

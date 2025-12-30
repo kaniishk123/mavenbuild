@@ -1,32 +1,56 @@
-name: run jar and store in code artficat
+name: run jar and store in code artifact
+
 on: workflow_dispatch
+
 permissions:
   id-token: write
   contents: read
+
 jobs:
   setup_and_load:
     runs-on: ubuntu-latest
+
     steps:
-      - name: get code
+      - name: checkout code
         uses: actions/checkout@v4
+
       - name: install java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 8
-      - name: conifgure aws oidc credentials
+
+      - name: configure aws oidc credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::995757496819:role/oidcrole
           aws-region: ap-south-1
-      - name: build the jar file
-        run: mvn clean package
-      - name: connect to code artifact
+
+      - name: build jar
+        run: mvn -B clean package
+
+      - name: get codeartifact token and configure maven
         run: |
-          export CODEART=$(aws codeartifact get-authorization-token \
+          TOKEN=$(aws codeartifact get-authorization-token \
             --domain kaniishk-domain \
             --query authorizationToken \
             --output text)
-          echo "//kaniishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/:_authToken=$CODEART" > ~/.m2/settings.xml
-      - name: upload to code artifact
-        run: mvn deploy
+
+          mkdir -p ~/.m2
+
+          cat <<EOF > ~/.m2/settings.xml
+          <settings>
+            <servers>
+              <server>
+                <id>codeartifact</id>
+                <username>aws</username>
+                <password>${TOKEN}</password>
+              </server>
+            </servers>
+          </settings>
+          EOF
+
+      - name: upload jar to codeartifact
+        run: |
+          mvn -B deploy \
+            -DaltDeploymentRepository=codeartifact::default::https://kaniishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/

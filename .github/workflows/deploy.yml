@@ -1,0 +1,32 @@
+name: run jar and store in code artficat
+on: workflow_dispatch
+permissions:
+  id-token: read
+  contents: write
+jobs:
+  setup_and_load:
+    runs-on: ubuntu-latest
+    steps:
+      - name: get code
+        uses: actions/checkout@v4
+      - name: install java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          version: 8
+      - name: conifgure aws oidc credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::995757496819:role/oidcrole
+          region: ap-south-1
+      - name: build the jar file
+        run: mvn clean package
+      - name: connect to code artifact
+        run: |
+          export CODEART=$(aws codeartifact get-authorization-token \
+            --domain my-domain \
+            --query authorizationToken \
+            --output text)
+          echo "//kaniishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/:_authToken=$CODEART" > ~/.m2/settings.xml
+      - name: upload to code artifact
+        run: mvn deploy

@@ -18,7 +18,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::995757496819:role/oidcrole
-          region: ap-south-1
+          aws-region: ap-south-1
       - name: build the jar file
         run: mvn clean package
       - name: connect to code artifact

@@ -1,8 +1,8 @@
 name: run jar and store in code artficat
 on: workflow_dispatch
 permissions:
-  id-token: read
-  contents: write
+  id-token: write
+  contents: read
 jobs:
   setup_and_load:
     runs-on: ubuntu-latest

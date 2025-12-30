@@ -54,7 +54,9 @@ jobs:
         run: |
           REV=1.0.$GITHUB_RUN_NUMBER
           echo "Using version: $REV"
-          mvn -B versions:set -DnewVersion=1.0.$GITHUB_RUN_NUMBER
+          mvn -B versions:set \
+            -DnewVersion=$REV \
+            -DgenerateBackupPoms=false
           mvn -B deploy \
             -DaltDeploymentRepository=codeartifact::default::https://kanishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/
 

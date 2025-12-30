@@ -13,7 +13,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          version: 8
+          java-version: 8
       - name: conifgure aws oidc credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

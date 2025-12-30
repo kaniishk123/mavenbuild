@@ -50,12 +50,15 @@ jobs:
           </settings>
           EOF
 
-      - name: upload jar to codeartifact
+      - name: upload jar with revision versioning
         run: |
           REV=1.0.$GITHUB_RUN_NUMBER
+          echo "Using version: $REV"
+
           mvn -B deploy \
-               -Drevision=$REV \
+            -Drevision=$REV \
             -DaltDeploymentRepository=codeartifact::default::https://kanishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/
+
   run_on_ec2:
     runs-on: ubuntu-latest
     needs: setup_and_load

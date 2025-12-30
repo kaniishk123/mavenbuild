@@ -52,5 +52,31 @@ jobs:
 
       - name: upload jar to codeartifact
         run: |
+          REV=1.0.$GITHUB_RUN_NUMBER
           mvn -B deploy \
+               -Drevision=$REV \
             -DaltDeploymentRepository=codeartifact::default::https://kanishk-domain-995757496819.d.codeartifact.ap-south-1.amazonaws.com/maven/mavenbuild/
+  run_on_ec2:
+    runs-on: ubuntu-latest
+    needs: setup_and_load
+    steps:
+      - name: config cred
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::995757496819:role/oidcrole
+          aws-region: ap-south-1
+      - name: fetch from artifact and run
+        run: |
+          aws ssm send-command \
+            --instance-ids i-0ec5a746f57126beb \
+            --document-name "AWS-RunShellScript" \
+            --comment "Fetch latest jar from CodeArtifact & run" \
+            --parameters commands='[
+              "aws codeartifact login --tool maven --domain kanishk-domain --repository mavenbuild --region ap-south-1",
+              "LATEST_VERSION=$(aws codeartifact list-package-versions --domain kanishk-domain --repository mavenbuild --format maven --namespace com.example --package my-java-app --query \"versions[0]\" --output text)",
+              "mvn dependency:get -DgroupId=com.example -DartifactId=my-java-app -Dversion=$LATEST_VERSION",
+              "LATEST_JAR=$(find ~/.m2/repository/com/example/my-java-app -name \"*.jar\" | sort | tail -1)",
+              "echo Running $LATEST_JAR",
+              "java -jar $LATEST_JAR"
+            ]' \
+            --output text
